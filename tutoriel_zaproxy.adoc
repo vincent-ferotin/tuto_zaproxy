@@ -1,0 +1,287 @@
+Tutoriel pour utiliser ZAProxy
+==============================
+Copyright 2017, Vincent Férotin & al. (see AUTHORS file), distributed under Creative Commons 4.0 International Attribution-ShareAlike (see LICENSE file)
+v0.1, 2017-01-24
+:doctype: article
+
+
+Introduction
+------------
+
+Ce tutoriel, sans prétention, se propose de vous faire utiliser
+https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project[OWASP Zed Attack Proxy]
+(ZAProxy) sous https://www.kali.org/[Kali Linux],
+dans une machine virtuelle http://www.virtualbox.org/[VirtualBox],
+tournant sur https://www.debian.org/[Debian] Stretch (actuellement en testing).
+On suppose que VirtualBox est déjà installé sur ce système d'exploitation.
+L'application web dont on découvrira et exploitera les failles par ZAProxy est
+celle construite spécifiquement pour ce projet:
+https://github.com/psiinon/bodgeit[BodgeIt], disponible sous forme
+d'image https://www.docker.com/[Docker].
+On suppose également que Docker est déjà installé sur votre machine.
+
+
+Installation de la machine virtuelle
+------------------------------------
+
+Il y a plusieurs manières d'installer Kali Linux dans une machine virtuelle.
+Celle que l'on va utiliser consiste à récupérer une image du système
+déjà construite.
+
+
+Téléchargement de l'image
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Dans la section "https://www.kali.org/downloads[Downloads]" du site web
+de la distribution, il y a un lien vers un site externe proposant
+de telles images: https://www.offensive-security.com/kali-linux-vmware-virtualbox-image-download/[Kali Virtual Images].
+On choisit alors la section "Kali VirtualBox Images", et une des deux images
+"Light", 32 ou 64 bits, dépendant de votre système et votre envie.
+
+On télécharge l'image, et vérifie sa bonne conformité avec la somme de contrôle
+SHA1 proposée en regard, par ex. pour la version actuelle "Kali Linux Light 64 bit VBox"
+en version "2016.2": `db154d8331356361281ab665f0b3aa09d2b380f3`:
+
+[source,shell]
+----
+$ sha1sum Kali-Linux-Light-2016.2-vbox-amd64.ova
+db154d8331356361281ab665f0b3aa09d2b380f3  Kali-Linux-Light-2016.2-vbox-amd64.ova
+----
+
+
+Import de l'image
+~~~~~~~~~~~~~~~~~
+
+Dans VirtualBox, on importe l"image (menu "Fichier > Importer un appareil virtuel")
+en sélectionnant le chemin du fichier précédemment téléchargé.
+
+Éventuellement, on configure ensuite les paramètres de la future machine virtuelle:
+
+Nom::
+je vous conseille de renommer suivant votre nomenclature la machine;
+Mémoire vive::
+en fonction de la taille de votre mémoire vive, vous voudrez peut-être
+ajuster ce paramètre;
+Contrôleur USB::
+A DESACTIVER si vous utilisez la version de VirtualBox packagée par Debian.
+
+On procède ensuite à l'import proprement dit.
+
+
+Configuration et démarrage de la machine virtuelle
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Avant de lancer la machine virtuelle fraîchement importée, on peut procéder
+à des ajustements dans sa configuration.
+
+Affichage > Écran > Mémoire vidéo::
+si l'on en a les moyens, cela ne fait pas de mal d’augmenter cette valeur.
+
+On lance ensuite la machine, et attend l'écran graphique de connexion.
+Les identifiants sont:
+
+login:: `root`
+mot de passe:: `toor` ("root" à l’envers)
+
+Il est souhaitable d'augmenter ensuite la taille de l’écran virtuel,
+fonction de la taille de votre écran physique et votre convenance,
+par ex. menu "Écran > Écran virtuel > 1280x800".
+
+
+Configuration de la langue et du clavier pour un usage en France/français
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+On va lancer un terminal (en `root` donc). On se rend vite compte que tout est
+configuré pour un usage en langue de Shakespeare.
+
+De manière temporaire, propre à la session courante, on va utiliser
+un clavier AZERTY plutôt:
+
+[source,shell]
+----
+$ setxkbmap fr
+----
+
+On va ensuite configurer le clavier pour qu'il soit toujours par défaut
+en AZERTY:
+
+[source,shell]
+----
+$ dpkg-reconfigure keyboard-configuration
+----
+
+Les choix dépendent ensuite de votre clavier physique;
+on peut probablement se contenter des choix par défaut:
+
+"Configuring keyboard-configuration":: Generic 105-key (Intl) PC
+"Keyboard layout":: Other / French / French
+"Key to function as AltGr":: The default for the keyboard layout
+"Key to function as Compose":: No compose key
+
+On va ensuite configurer la langue pour afficher en français de France et UTF-8 :
+
+[source,shell]
+----
+$ export LANG=fr_FR.UTF-8
+$ dpkg-reconfigure locales
+----
+
+avec:
+
+"Configuration des locales":: sélectionner `fr_FR.UTF-8 UTF-8`
+"Jeu de paramètres régionaux actif par défaut":: `fr_FR.UTF-8`
+
+On va installer ensuite le paquet `task-french`:
+
+[source,shell]
+----
+$ dhclient eth0
+$ apt install task-french
+----
+
+Avant de redémarrer, il est peut-être bon de demander à GRUB de se mettre à jour:
+
+[source,shell]
+----
+$ update-grub
+----
+
+Pour vérifier que tous les changements ont bien été pris en compte,
+redémarrer la machine, et procéder à des tests.
+
+
+Changement de mot de passe root
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pour augmenter un peu la sécurité d'usage de votre machine virtuelle,
+on peut procéder au changement de mot de passe `root` (en étant loggué
+en tant que tel, et après s'être assuré de la configuration du clavier):
+
+[source,shell]
+----
+$ passwd
+----
+
+
+Mise à jour de Kali
+~~~~~~~~~~~~~~~~~~~
+
+On va procéder ensuite à la mise à jour de la distribution, qui est
+en rolling-release. De préférence, on effectuera ces manipulations en démarrant
+le système via GRUB en "recovery mode":
+
+[source,shell]
+----
+$ dhclient eth0
+# Mise à jour de la base des paquets
+$ apt update
+# Mise à jour des paquets nécessaires à l’installation des autres
+$ apt install dpkg
+$ apt install apt apt-listchanges apt-utils libapt-inst2.0 libapt-pkg5.0
+# Mise à jour de tous les autres paquets
+$ apt full-upgrade
+----
+
+On peut ensuite éventuellement supprimer les paquets obsolètes:
+[source,shell]
+----
+$ apt auto-remove
+----
+
+Une fois le système redémarré, on peut supprimer les paquets correspondant
+à l'ancienne version du noyau Linux (4.6, alors que la récente installée est
+la 4.8):
+
+[source,shell]
+----
+$ apt remove linux-headers-4.6.0-kali-amd64 linux-headers-4.6.0-kali-common linux-image-4.6.0-kali-amd64 linux-kbuild-4.6
+----
+
+
+Installation et première configuration de ZAProxy
+-------------------------------------------------
+
+L'installation de ZAProxy est triviale:
+
+[source,shell]
+----
+$ apt install zaproxy
+----
+
+On lance ensuite le logiciel, soit en ligne de commande, soit depuis le menu
+"Applications > 03-Applications Web > owasp-zap".
+Le premier lancement demande d'accepter sa licence d'utilisation.
+ZAProxy étant relativement instable, il est recommandé de se créer une session:
+
+"Voulez-vous sauvegarder la session ZAP?"::
+"oui, je veux enregistrer cette session, mais [en précisant ses nom et
+emplacement]" + "Rappelez-vous de mon choix et ne me demandez plus"
+
+ZAP étant une application modulaire, il est recommandé de mettre à jour
+ses modules régulièrement. Faisons-le sans attendre:
+
+Menu "Aide > Vérifier les mises à jour":: Mettre tout à jour
+
+
+Installation et lancement de l'application web à analyser
+---------------------------------------------------------
+
+Sous Debian, il est nécessaire que vous apparteniez au groupe d'utilisateur
+`docker`:
+
+[source,shell]
+----
+$ su -
+$ adduser <votre_identifiant> docker
+----
+
+(N'oubliez pas de vous reconnecter ensuite, pour que ce changement soit effectif.)
+
+L’application web à analyser, BodgeIt, est disponible sur le Hub de Docker:
+`psiinon/bodgeit`. On va récupérer l'image par:
+
+[source,shell]
+----
+$ docker pull psiinon/bodgeit
+----
+
+On va ensuite lancer le container correspondant à cette image, et mapper le port 
+8080 du container sur le port 80 de notre machine hôte:
+
+[source,shell]
+----
+$ docker run --rm -p 80:8080 -i -t psiinon/bodgeit
+----
+
+L'application est alors accessible depuis l'URL http://127.0.0.1/bodgeit.
+
+
+Analyse de l'application par ZAProxy
+------------------------------------
+
+Configurations préliminaires
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+On va maintenant faire tourner notre machine virtuelle Kali sur un réseau privé.
+On change ses paramètres réseau: menu "Périphériques > Réseau > Réglages réseau...":
+
+"mode d'accès au réseau":: "réseau privé hôte"
+  nom:: "vboxnet0" (le créer au besoin)
+
+et relancer la configuration DHCP (dans la machine virtuelle):
+
+[source,shell]
+----
+$ dhclient -r eth0 && dhclient eth0
+----
+
+Toujours dans la machine, on va lancer et paramétrer Firefox:
+menu "Edit > Preferences > Advanced > Network": "Connection > Settings":
+
+"Configure Proxies to Access the Internet":: "Manual proxy configuration":
+  HTTP proxy:: `127.0.0.1`
+  Port:: `8080`
+  "No proxy for":: [rien/vide]
+
+L'application bodgeit devrait être accessible alors depuis ce Firefox
+oà l'adresse : http://127.0.0.1/bodgeit.
