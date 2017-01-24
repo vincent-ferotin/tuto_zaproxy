@@ -1,0 +1,12 @@
+This project is a french tutorial for starting with OWASP Zed Attack Proxy
+on a VIrtualBox virtual machine, under Debian Stretch (currently testing),
+on a vulnerable web application: BodgeIt, run via Docker.
+
+Copyright: 2017, Vincent Férotin & al. (see AUTHORS file)
+License: Creative Commons 4.0 International Attribution-ShareAlike (see LICENSE file)
+
+Content is formatted using ASCIIdoc.
+A short usage for generating a single file HTML5 could be:
+
+    $ asciidoc -b html5 -a icons -a toc2 -a theme=flask tutoriel_zaproxy.adoc
+
