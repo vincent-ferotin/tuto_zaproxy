@@ -23,13 +23,25 @@ Ce tutoriel, sans prétention, se propose de vous faire utiliser
 https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project[OWASP Zed Attack Proxy]
 (ZAProxy) sous https://www.kali.org/[Kali Linux],
 dans une machine virtuelle http://www.virtualbox.org/[VirtualBox],
-tournant sur https://www.debian.org/[Debian] Stretch (actuellement en testing).
+tournant sur https://www.debian.org/[Debian].
 On suppose que VirtualBox est déjà installé sur ce système d'exploitation.
 L'application web dont on découvrira et exploitera les failles par ZAProxy est
 celle construite spécifiquement pour ce projet:
 https://github.com/psiinon/bodgeit[BodgeIt], disponible sous forme
 d'image https://www.docker.com/[Docker].
 On suppose également que Docker est déjà installé sur votre machine.
+
+Versions utilisées::
+  Kali Linux (guest)::
+    2016.2 rolling-release
+  Debian (host)::
+    Stretch, actuellement `testing`
+  VirtualBox::
+    5.1.10_Debian r112026
+  ZAProxy::
+    2.5.0
+  Docker::
+    1.11.2
 
 
 Installation de la machine virtuelle
