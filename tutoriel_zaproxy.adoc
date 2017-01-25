@@ -17,6 +17,10 @@ Statut::
   très incomplet, draft
 Version::
   v0.1-dev, 2017-01-24
+Sources::
+  https://github.com/vincent-ferotin/tuto_zaproxy
+Version lisible en ligne::
+  https://github.com/vincent-ferotin/tuto_zaproxy/blob/master/tutoriel_zaproxy.adoc
 ===========================================
 
 
