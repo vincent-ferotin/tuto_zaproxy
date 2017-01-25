@@ -8,5 +8,5 @@ License: Creative Commons 4.0 International Attribution-ShareAlike (see LICENSE 
 Content is formatted using ASCIIdoc.
 A short usage for generating a single file HTML5 could be:
 
-    $ asciidoc -b html5 -a icons -a toc2 -a theme=flask tutoriel_zaproxy.adoc
+    $ asciidoc -b html5 -a toc2 -a theme=flask tutoriel_zaproxy.adoc
 
