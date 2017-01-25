@@ -5,7 +5,7 @@ Tutoriel pour utiliser ZAProxy
 Copyright::
   2017, Vincent Férotin & al.
 Auteurs::
-  voir le fichier `AUTHORS`
+include::AUTHORS[tabsize=2]
 License::
   https://creativecommons.org/licenses/by-sa/4.0/[
   Creative Commons 4.0 International Attribution-ShareAlike]
