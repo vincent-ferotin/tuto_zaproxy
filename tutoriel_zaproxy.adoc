@@ -277,8 +277,8 @@ L’application web à analyser, BodgeIt, est disponible sur le Hub de Docker:
 $ docker pull psiinon/bodgeit
 ----
 
-On va ensuite lancer le container correspondant à cette image, et mapper le port 
-8080 du container sur le port 80 de notre machine hôte:
+On va ensuite lancer le conteneur correspondant à cette image, et mapper le port
+`8080` du container sur le port `80` de notre machine hôte:
 
 [source,shell]
 ----
@@ -286,6 +286,9 @@ $ docker run --rm -p 80:8080 -i -t psiinon/bodgeit
 ----
 
 L'application est alors accessible depuis l'URL http://127.0.0.1/bodgeit.
+
+[NOTE]
+Pour arrêter le conteneur, il suffit d'appuyer sur `Ctrl + c`.
 
 
 Analyse de l'application par ZAProxy
