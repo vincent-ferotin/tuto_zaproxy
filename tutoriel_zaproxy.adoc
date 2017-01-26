@@ -344,3 +344,16 @@ Nmap done...
 ----
 
 et l'application à analyser accessible à l'adresse: http://192.168.56.1/bodgeit.
+
+Pour parachever la configuration réseau, et permettre d'analyser le trafic HTTPS,
+on va ajouter à Firefox un certificat racine créé par ZAProxy.
+
+La génération d'un tel certificat se fait dans ZAPproxy: menu
+"Outils > Options > Certificat SSL dynamique". S'il n'y a pas déjà par défaut
+un certificat de généré, en générer un. On va ensuite exporter ce certificat,
+et l'importer dans Firefox. Bouton "Sauvegarder", enregistrer le fichier par ex.
+sur le bureau: `owasp_zap_root_ca.cert`.
+
+L'import du certificat dans Firefox se fait via: menu
+"Edit > Preferences > Advanced > Certificates > View Certificates > Authorities
+> Import...". On sélectionne alors notre certificat précédemment exporté.
