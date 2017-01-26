@@ -311,16 +311,21 @@ et relancer la configuration DHCP (dans la machine virtuelle):
 $ dhclient -r eth0 && dhclient eth0
 ----
 
+Pour analyser le trafic réseau, on va placer ZPAroxy en proxy entre notre
+navigateur web Firefox sur la machine virtuelle et l'extérieur.
+ZAProxy sert de proxy sur l'adresse IP et le port renseignés dans: menu
+"Outils > Options > Proxy local".
 Toujours dans la machine, on va lancer et paramétrer Firefox:
 menu "Edit > Preferences > Advanced > Network": "Connection > Settings":
 
 "Configure Proxies to Access the Internet":: "Manual proxy configuration":
   HTTP proxy:: `127.0.0.1`
   Port:: `8080`
-  "No proxy for":: [rien/vide]
+  Use this proxy server for all protocols:: coché/oui
 
-L'application bodgeit devrait être accessible alors depuis ce Firefox.
-Il faut maintenant trouver l'adresse IP de la machine hôte sur ce réseau virtuel.
+L'application BodgeIt devrait être accessible alors depuis ce Firefox.
+Il faut maintenant trouver l'adresse IP de la machine hôte, faisant office de
+serveur web, sur ce réseau virtuel.
 On peut la deviner en connaissant notre propre adresse IP:
 
 [source,shell]
