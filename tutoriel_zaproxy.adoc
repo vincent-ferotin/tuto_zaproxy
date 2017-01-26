@@ -210,6 +210,10 @@ $ apt install apt apt-listchanges apt-utils libapt-inst2.0 libapt-pkg5.0
 $ apt full-upgrade
 ----
 
+[WARNING]
+Il est possible que GRUB demande à s'installer sur un disque.
+Choisir alors le 1er: `sda`.
+
 On peut ensuite éventuellement supprimer les paquets obsolètes:
 [source,shell]
 ----
