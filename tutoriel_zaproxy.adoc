@@ -240,8 +240,8 @@ L'installation de ZAProxy est triviale:
 $ apt install zaproxy
 ----
 
-On lance ensuite le logiciel, soit en ligne de commande, soit depuis le menu
-"Applications > 03-Applications Web > owasp-zap".
+On lance ensuite le logiciel, soit en ligne de commande (`zaproxy`),
+soit depuis le menu "Applications > 03-Applications Web > owasp-zap".
 Le premier lancement demande d'accepter sa licence d'utilisation.
 ZAProxy étant relativement instable, il est recommandé de se créer une session:
 
