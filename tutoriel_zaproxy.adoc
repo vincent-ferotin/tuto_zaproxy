@@ -38,6 +38,8 @@ celle construite spécifiquement pour ce projet:
 https://github.com/psiinon/bodgeit[BodgeIt], disponible sous forme
 d'image https://www.docker.com/[Docker].
 On suppose également que Docker est déjà installé sur votre machine.
+On utilisera https://www.mozilla.org/en-US/firefox/organizations/faq/[Firefox ESR]
+pour naviguer dans l'application web BodgeIt.
 
 Versions utilisées::
   Kali Linux (guest)::
@@ -50,6 +52,8 @@ Versions utilisées::
     2.5.0
   Docker::
     1.11.2
+  Firefox ESR::
+    45.6.0
 
 
 Installation de la machine virtuelle
@@ -291,8 +295,8 @@ L'application est alors accessible depuis l'URL http://127.0.0.1/bodgeit.
 Analyse de l'application par ZAProxy
 ------------------------------------
 
-Configurations préliminaires
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Configurations réseau préliminaires
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 On va maintenant faire tourner notre machine virtuelle Kali sur un réseau privé.
 On change ses paramètres réseau: menu "Périphériques > Réseau > Réglages réseau...":
