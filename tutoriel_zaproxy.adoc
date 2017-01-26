@@ -258,7 +258,7 @@ Menu "Aide > Vérifier les mises à jour":: Mettre tout à jour
 Installation et lancement de l'application web à analyser
 ---------------------------------------------------------
 
-Sous Debian, il est nécessaire que vous apparteniez au groupe d'utilisateur
+Sous Debian, il est nécessaire que vous apparteniez au groupe d'utilisateurs
 `docker`:
 
 [source,shell]
