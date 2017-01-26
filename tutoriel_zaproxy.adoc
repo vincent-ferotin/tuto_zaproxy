@@ -174,14 +174,6 @@ $ dhclient eth0
 $ apt install task-french
 ----
 
-// TODO: Est-ce vraiment nécessaire?
-Avant de redémarrer, il est peut-être bon de demander à GRUB de se mettre à jour:
-
-[source,shell]
-----
-$ update-grub
-----
-
 Pour vérifier que tous les changements ont bien été pris en compte,
 redémarrer la machine, et procéder à des tests.
 
