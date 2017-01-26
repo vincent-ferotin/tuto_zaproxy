@@ -315,5 +315,28 @@ menu "Edit > Preferences > Advanced > Network": "Connection > Settings":
   Port:: `8080`
   "No proxy for":: [rien/vide]
 
-L'application bodgeit devrait être accessible alors depuis ce Firefox
-oà l'adresse : http://127.0.0.1/bodgeit.
+L'application bodgeit devrait être accessible alors depuis ce Firefox.
+Il faut maintenant trouver l'adresse IP de la machine hôte sur ce réseau virtuel.
+On peut la deviner en connaissant notre propre adresse IP:
+
+[source,shell]
+----
+$ ifconfig eth0 |grep inet
+    inet 192.168.56.101   netmask 255.255.255.0 ...
+----
+
+Notre hôte Debian devrait donc se trouver à l'adresse IP `192.168.56.1`;
+au besoin, on peut lister les machines par:
+
+[source,shell]
+----
+$ nmap -sn 192.168.56.0/24 |grep report
+...
+Nmap scan report for 192.168.56.1
+Nmap scan report for 192.168.56.100
+Nmap scan report for 192.168.56.101
+...
+Nmap done...
+----
+
+et l'application à analyser accessible à l'adresse: http://192.168.56.1/bodgeit.
