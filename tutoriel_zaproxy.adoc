@@ -41,7 +41,7 @@ On suppose également que Docker est déjà installé sur votre machine.
 On utilisera https://www.mozilla.org/en-US/firefox/organizations/faq/[Firefox ESR]
 pour naviguer dans l'application web BodgeIt.
 
-Versions utilisées::
+Versions utilisées pour ce tutoriel::
   Kali Linux (guest)::
     2016.2 rolling-release
   Debian (host)::
@@ -87,16 +87,16 @@ db154d8331356361281ab665f0b3aa09d2b380f3  Kali-Linux-Light-2016.2-vbox-amd64.ova
 Import de l'image
 ~~~~~~~~~~~~~~~~~
 
-Dans VirtualBox, on importe l"image (menu "Fichier > Importer un appareil virtuel")
+Dans VirtualBox, on importe l'image (menu "Fichier > Importer un appareil virtuel")
 en sélectionnant le chemin du fichier précédemment téléchargé.
 
 Éventuellement, on configure ensuite les paramètres de la future machine virtuelle:
 
 Nom::
-je vous conseille de renommer suivant votre nomenclature la machine;
+je vous conseille de renommer suivant votre propre nomenclature la machine;
 Mémoire vive::
-en fonction de la taille de votre mémoire vive, vous voudrez peut-être
-ajuster ce paramètre;
+en fonction de la taille de la mémoire vive de votre machine hôte,
+vous voudrez peut-être ajuster ce paramètre;
 Contrôleur USB::
 A DESACTIVER si vous utilisez la version de VirtualBox packagée par Debian.
 
@@ -119,7 +119,8 @@ login:: `root`
 mot de passe:: `toor` ("root" à l’envers)
 
 Il est souhaitable d'augmenter ensuite la taille de l’écran virtuel,
-fonction de la taille de votre écran physique et votre convenance,
+car ZPAProxy a une interface graphique assez large;
+la valeur sera fonction de la taille de votre écran physique et votre convenance,
 par ex. menu "Écran > Écran virtuel > 1280x800".
 
 
@@ -128,17 +129,19 @@ Configuration de la langue et du clavier pour un usage en France/français
 
 On va lancer un terminal (en `root` donc). On se rend vite compte que tout est
 configuré pour un usage en langue de Shakespeare.
+Les opérations suivantes vont nous permettre d'avoir un système entièrement
+en français de France.
 
-De manière temporaire, propre à la session courante, on va utiliser
-un clavier AZERTY plutôt:
+1)  De manière temporaire, propre à la session courante, on va utiliser
+    un clavier AZERTY plutôt:
 
 [source,shell]
 ----
 $ setxkbmap fr
 ----
 
-On va ensuite configurer le clavier pour qu'il soit toujours par défaut
-en AZERTY:
+2)  On va ensuite configurer le clavier pour qu'il soit toujours par défaut
+    en AZERTY:
 
 [source,shell]
 ----
@@ -153,7 +156,8 @@ on peut probablement se contenter des choix par défaut:
 "Key to function as AltGr":: The default for the keyboard layout
 "Key to function as Compose":: No compose key
 
-On va ensuite configurer la langue pour afficher en français de France et UTF-8 :
+3)  On va ensuite configurer la langue pour afficher en français de France
+    et UTF-8:
 
 [source,shell]
 ----
@@ -166,7 +170,7 @@ avec:
 "Configuration des locales":: sélectionner `fr_FR.UTF-8 UTF-8`
 "Jeu de paramètres régionaux actif par défaut":: `fr_FR.UTF-8`
 
-On va installer ensuite le paquet `task-french`:
+4)  On va enfin installer ensuite le paquet `task-french`:
 
 [source,shell]
 ----
@@ -222,7 +226,7 @@ $ apt auto-remove
 
 Une fois le système redémarré, on peut supprimer les paquets correspondant
 à l'ancienne version du noyau Linux (4.6, alors que la récente installée est
-la 4.8):
+la 4.9):
 
 [source,shell]
 ----
@@ -242,7 +246,10 @@ $ apt install zaproxy
 
 On lance ensuite le logiciel, soit en ligne de commande (`zaproxy`),
 soit depuis le menu "Applications > 03-Applications Web > owasp-zap".
-Le premier lancement demande d'accepter sa licence d'utilisation.
+
+Le premier lancement demande d'abord d'accepter sa licence d'utilisation:
+https://www.apache.org/licenses/LICENSE-2.0[Apache License 2.0].
+
 ZAProxy étant relativement instable, il est recommandé de se créer une session:
 
 "Voulez-vous sauvegarder la session ZAP?"::
@@ -301,7 +308,10 @@ On va maintenant faire tourner notre machine virtuelle Kali sur un réseau priv�
 On change ses paramètres réseau: menu "Périphériques > Réseau > Réglages réseau...":
 
 "mode d'accès au réseau":: "réseau privé hôte"
-  nom:: "vboxnet0" (le créer au besoin)
+  nom::
+  "vboxnet0"
+  -- le créer au besoin: menu Virtualbox "Fichier > Paramètres > Réseaux
+  > Réseau hôte uniquement > Ajoute un nouveau réseau...".
 
 et relancer la configuration DHCP (dans la machine virtuelle):
 
@@ -323,6 +333,7 @@ menu "Edit > Preferences > Advanced > Network": "Connection > Settings":
   Use this proxy server for all protocols:: coché/oui
 
 L'application BodgeIt devrait être accessible alors depuis ce Firefox.
+
 Il faut maintenant trouver l'adresse IP de la machine hôte, faisant office de
 serveur web, sur ce réseau virtuel.
 On peut la deviner en connaissant notre propre adresse IP:
@@ -347,7 +358,8 @@ Nmap scan report for 192.168.56.101
 Nmap done...
 ----
 
-et l'application à analyser accessible à l'adresse: http://192.168.56.1/bodgeit.
+L'application BodgeIt à analyser est dans notre cas accessible à l'adresse:
+http://192.168.56.1/bodgeit (bien penser à indiquer le chemin `bodgeit/`).
 
 Pour parachever la configuration réseau, et permettre d'analyser le trafic HTTPS,
 on va ajouter à Firefox un certificat racine créé par ZAProxy.
