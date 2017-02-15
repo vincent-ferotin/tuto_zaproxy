@@ -313,7 +313,7 @@ On change ses paramètres réseau: menu "Périphériques > Réseau > Réglages r
   -- le créer au besoin: menu Virtualbox "Fichier > Paramètres > Réseaux
   > Réseau hôte uniquement > Ajoute un nouveau réseau...".
 
-et relancer la configuration DHCP (dans la machine virtuelle):
+et relance la configuration DHCP (dans la machine virtuelle):
 
 [source,shell]
 ----
@@ -373,3 +373,88 @@ sur le bureau: `owasp_zap_root_ca.cert`.
 L'import du certificat dans Firefox se fait via: menu
 "Edit > Preferences > Advanced > Certificates > View Certificates > Authorities
 > Import...". On sélectionne alors notre certificat précédemment exporté.
+
+
+Première attaque par le formulaire de contact
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pour débuter l'apprentissage de ZAProxy, on va tester l'attaque d'un premier
+formulaire, celui de la page "Contact Us".
+Vous constaterez, lors de la visite de l'application BodgeIt par Firefox,
+et notamment de cette page, que ZAProxy enregistre la structure du site au fur
+et à mesure de votre visite (onglet "Sites").
+
+En remplissant le seul champ du formulaire de contact, on peut analyser
+la requête HTTP émise (onglet "Requête", POST en l'occurence),
+ainsi que la réponse obtenue (onglet "Réponse").
+Si on renseigne une valeur nominale, comme par ex.:
+
+    Un paragraphe anodin.
+
+alors la valeur exacte de ce message est ensuite affichée sur la page de contact.
+
+Si on  observe le corps de la requête HTTP (`POST:contact.jsp`),
+on retrouve le contenu de notre message associé à la variable `comments`.
+La valeur n'est toutefois pas brute, mais encodée, de la manière nommée
+dans l'en-tête `Content-type` de la requête:
+`application/x-www-form-urlencoded` -- encodage standart pour un formulaire
+HTML (décrit dans la documentation de la référence du langage):
+
+    comments=Un+paragraphe+anodin.
+
+Si l'application BodgeIt ne procède pas au nettoyage préalable de la valeur
+de ce champs avant son affichage, et se contente de réafficher tel quel
+son contenu, c'est à dire sans procéder à la susbtitution des caractères de balisage,
+alors nous avons une opportunité d'attaque.
+Tentons quelque chose de relativement anodin, le positionnement de la valeur
+du champs à:
+
+    <script>window.alert("Hello, World!");</script>
+
+pour afficher faire afficher par JavaScript une boîte de dialogue.
+Le résultat affiché par l'application est `window.alert(Hello, World!);`.
+Il y a donc bien sanitization des valeurs renseignées dans le formulaire!
+
+Toutefois, jusqu'où va cette sanitization? Pour le mesurer, on va procéder à
+des tests successifs, en jouant sur la diversité offerte d'une part par
+le langage JavaScript lui-même, et d'autre part sur la souplesse d'interprétation
+du navigateur dans les balises HTML.
+
+D'abord, examinons la réponse HTML fournie par la précédente tentative:
+
+*   les balises ouvrantes et fermantes `<script>` ont été supprimées;
+*   les guillements doubles (`"`) ont été supprimés.
+
+Essayons d'abord de contourner cette dernière restriction, en les remplaçant
+par des guillemets simples (`'`):
+
+    <script>window.alert('Hello, World!');</script>
+
+Oh joie! la réponse HTML inclut maintenant ces guillements:
+`window.alert('Hello, World!');`.
+
+Tentons ensuite de faire réapparaître la balise `<script>`.
+Testons l'échappement du chevron avec le caractère standart d'échappement
+backslash (`\`):
+
+    \<script\>window.alert('Hello, World!');\</script\>
+
+Le réponse HTML pour cette requête comprend alors l'intégralité de nos
+caractères: `\<script\>window.alert('Hello, World!');\</script\>`.
+On en déduit que le filtre s'oppère plus sur le tag de la balise que sur
+la présence d'une balise.
+
+Souvenons-nous alors des premiers temps de HTML: les tags étaient alors écrits
+majoritairement en majuscule. Les navigateurs, pour garder la compatibilité avec
+les pages écrites de ce temps, continuent à interpréter les tags ainsi formés.
+Tentons de contourner le filtre sur, probablement, `script`, en utilisant:
+
+    <SCRIPT>window.alert('Hello, World');</SCRIPT>
+
+Et voilà! Vous devriez voir appraître notre fenêtre.
+
+Nous avons donc détourné un système pour notre propre usage (même s'il semble
+ici... anodin). Imaginez maintenant que le contenu du formulaire de contact soit
+enregistré dans une base de données, et reservi dans un livre d'or par exemple:
+ce seront tous les utilisateurs le consultant qui seront alors impactés.
+Et pensez ensuite au cas où le script soit malveillant!
